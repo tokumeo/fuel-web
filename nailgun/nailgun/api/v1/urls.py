@@ -48,6 +48,8 @@ from nailgun.api.v1.handlers.node_group import NodeGroupCollectionHandler
 from nailgun.api.v1.handlers.node_group import NodeGroupHandler
 
 from nailgun.api.v1.handlers.network_configuration \
+    import InterfaceNamesConfigurationHandler
+from nailgun.api.v1.handlers.network_configuration \
     import NeutronNetworkConfigurationHandler
 from nailgun.api.v1.handlers.network_configuration \
     import NeutronNetworkConfigurationVerifyHandler
@@ -131,6 +133,8 @@ urls = (
     ClusterAttributesHandler,
     r'/clusters/(?P<cluster_id>\d+)/attributes/defaults/?$',
     ClusterAttributesDefaultsHandler,
+    r'/clusters/(?P<cluster_id>\d+)/network_configuration/interface_names/?$',
+    InterfaceNamesConfigurationHandler,
     # nova network-related
     r'/clusters/(?P<cluster_id>\d+)/network_configuration/nova_network/?$',
     NovaNetworkConfigurationHandler,

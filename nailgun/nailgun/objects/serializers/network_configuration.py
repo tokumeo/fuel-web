@@ -84,3 +84,12 @@ class NeutronNetworkConfigurationSerializer(NetworkConfigurationSerializer):
         result = cls.serialize_net_groups_and_vips(cluster)
         result['networking_parameters'] = cls.serialize_network_params(cluster)
         return result
+
+
+class InterfaceNamesConfigurationSerializer(BasicSerializer):
+
+    fields = ('nic_rename_rules',)
+
+    @classmethod
+    def serialize_for_cluster(cls, cluster):
+        return BasicSerializer.serialize(cluster.network_config, cls.fields)

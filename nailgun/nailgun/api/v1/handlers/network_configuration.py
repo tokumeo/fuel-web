@@ -31,11 +31,15 @@ from nailgun.objects.serializers.network_configuration \
     import NeutronNetworkConfigurationSerializer
 from nailgun.objects.serializers.network_configuration \
     import NovaNetworkConfigurationSerializer
+from nailgun.objects.serializers.network_configuration \
+    import InterfaceNamesConfigurationSerializer
 
 from nailgun.api.v1.validators.network \
     import NeutronNetworkConfigurationValidator
 from nailgun.api.v1.validators.network \
     import NovaNetworkConfigurationValidator
+from nailgun.api.v1.validators.network \
+    import InterfaceNamesConfigurationValidator
 
 from nailgun import consts
 from nailgun import objects
@@ -62,6 +66,25 @@ class ProviderHandler(BaseHandler):
         if cluster.is_locked:
             raise self.http(403, "Network configuration can't be changed "
                                  "after, or in deploy.")
+
+
+class InterfaceNamesConfigurationHandler(BaseHandler):
+
+    validator = InterfaceNamesConfigurationValidator
+    serializer = InterfaceNamesConfigurationSerializer
+
+    @content
+    def GET(self, cluster_id):
+        cluster = self.get_object_or_404(objects.Cluster, cluster_id)
+        return self.serializer.serialize_for_cluster(cluster)
+
+    @content
+    def PUT(self, cluster_id):
+        cluster = self.get_object_or_404(objects.Cluster, cluster_id)
+        data = jsonutils.loads(web.data())
+        nm = objects.Cluster.get_network_manager(cluster)
+        nm.update_nic_rename_rules(cluster, data)
+        nm.apply_nic_rename_rules(cluster)
 
 
 class NovaNetworkConfigurationHandler(ProviderHandler):

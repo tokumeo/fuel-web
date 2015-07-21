@@ -93,6 +93,14 @@ class NeutronNetworkConfigurationValidator(NetworkConfigurationValidator):
         return d
 
 
+class InterfaceNamesConfigurationValidator(BasicValidator):
+
+    @classmethod
+    def validate_nic_rename_rules(cls, data):
+        d = cls.validate_json(data)
+        return d
+
+
 class NetAssignmentValidator(BasicValidator):
     @classmethod
     def validate(cls, node):

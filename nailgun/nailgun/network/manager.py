@@ -15,6 +15,10 @@
 #    under the License.
 
 from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 from itertools import imap
 from itertools import islice
@@ -1200,3 +1204,29 @@ class NetworkManager(object):
             if network_group in assigned_networks:
                 return iface
         return None
+
+    @classmethod
+    def update_nic_rename_rules(cls, cluster, data):
+        cluster.network_config.nic_rename_rules = data
+        db().commit()
+
+    @classmethod
+    def _flatten_nic_rename_rules(cls, cluster):
+        rules = cluster.network_config.nic_rename_rules
+        result = OrderedDict()
+        for rule in rules:
+            key = (rule["match_attribute"], rule["match_value"])
+            result[key] = rule["nic_name"]
+        return result
+
+    @classmethod
+    def apply_nic_rename_rules(cls, cluster):
+        rules = cls._flatten_nic_rename_rules(cluster)
+        for node in db().query(Node).filter_by(cluster_id=cluster.id):
+            for nic in node.nic_interfaces:
+                for key, value in rules.iteritems():
+                    # wrap in try...except AttributeError
+                    if getattr(nic, key[0]) == key[1]:
+                        nic.name = value
+                        break
+        db().commit()

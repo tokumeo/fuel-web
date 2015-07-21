@@ -40,6 +40,7 @@ class NetworkingConfig(Base):
         "8.8.8.8"
     ])
     floating_ranges = Column(JSON, default=[])
+    nic_rename_rules = Column(JSON, default=[])
 
     __mapper_args__ = {
         'polymorphic_on': discriminator
